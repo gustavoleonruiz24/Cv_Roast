@@ -5,16 +5,13 @@ import random
 import urllib.parse
 
 # 1. Configuración de Seguridad y Modelo
-# Se recomienda usar st.secrets para la producción en Streamlit Cloud
 try:
     API_KEY = st.secrets["GEMINI_API_KEY"]
 except:
-    # Llave de respaldo para pruebas locales
+    # Llave para pruebas locales
     API_KEY = "AIzaSyAQrDcDeYjS4Z6JCCF_Hk5-05EfWPasQX8"
 
 genai.configure(api_key=API_KEY)
-
-# Usando Gemini 3 Flash Preview según disponibilidad detectada
 model = genai.GenerativeModel('gemini-3-flash-preview')
 
 def extraer_texto_pdf(file):
@@ -27,37 +24,26 @@ def extraer_texto_pdf(file):
 # --- Configuración de Interfaz ---
 st.set_page_config(page_title="CV Roast AI 2026", page_icon="💀", layout="centered")
 
-# Estilo personalizado para el botón de LinkedIn
-st.markdown("""
-    <style>
-    .stDownloadButton, .stButton button {
-        width: 100%;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
 st.title("🔥 CV Roast: Edición 2026")
 st.subheader("Humillación profesional nivel Dios con Gemini 3")
 st.markdown("---")
 
-archivo_subido = st.file_uploader("Sube tu CV en formato PDF para ser destruido", type=["pdf"])
+archivo_subido = st.file_uploader("Sube tu CV (PDF) para ser destruido", type=["pdf"])
 
 if archivo_subido is not None:
-    with st.spinner('Escaneando tu triste existencia profesional...'):
+    with st.spinner('Analizando tu triste realidad laboral...'):
         try:
-            # Procesamiento del archivo
             texto_cv = extraer_texto_pdf(archivo_subido)
             
-            # Prompt optimizado para humor negro y jerga técnica
+            # Prompt avanzado con peticiones específicas de arquetipo y métricas
             prompt = f"""
-            Actúa como un reclutador de TI extremadamente amargado, sarcástico y cínico. 
-            Analiza el texto de este CV y haz un 'Roast' corto pero brutalmente honesto. 
-            Mención especial si ves clichés como 'trabajo bajo presión' o habilidades básicas como 'Office'.
-            Usa jerga de TI, BI (Power BI, DAX) y si detectas algo de la industria de berries o JDEdwards, sé más ácido.
+            Actúa como un reclutador de TI amargado, experto en BI y ERPs.
+            Analiza este CV y:
+            1. Haz un roast brutal y corto.
+            2. Asigna un 'Arquetipo de Falla' (ej: Dinosaurio del ERP, Mago del Excel 97, Eterno Junior, Señor Cliché).
+            3. Identifica el cliché más imperdonable.
             
-            Al final, entrega:
-            1. Un veredicto de una sola frase lapidaria.
-            2. 3 consejos directos que no pidieron pero necesitan.
+            Usa jerga de TI, Power BI y sector agro (si aplica). 
             
             Texto del CV:
             {texto_cv}
@@ -65,55 +51,64 @@ if archivo_subido is not None:
             
             response = model.generate_content(prompt)
             
-            # --- Visualización de Resultados ---
+            # --- Lógica de BI y "Humillación Visual" ---
             st.divider()
             
-            # Métricas estilo Dashboard de BI
-            col1, col2, col3 = st.columns(3)
-            score_emp = random.randint(8, 38)
-            col1.metric("Empleabilidad", f"{score_emp}%", "-62%")
-            col2.metric("Nivel de Ego", f"{random.randint(85, 99)}%", "Crítico")
-            col3.metric("Clichés", "100%", "Fijo")
+            # Generación de métricas para el impacto visual
+            score_emp = random.randint(5, 38)
+            score_fatiga = random.randint(80, 100)
             
+            col1, col2, col3 = st.columns(3)
+            col1.metric("Empleabilidad", f"{score_emp}%", "-65%")
+            col2.metric("Fatiga del Reclutador", f"{score_fatiga}%", "Crítico")
+            col3.metric("Clichés TI", "100%", "Fijo")
+            
+            # Gráfico de barras de "Habilidades vs. Realidad"
+            st.write("### 📊 Análisis de Skills Reales")
+            chart_data = {
+                "Habilidad": ["Autoestima", "Uso de Clichés", "Skills de LinkedIn", "Habilidad Real"],
+                "Nivel": [95, 100, 85, score_emp]
+            }
+            st.bar_chart(chart_data, x="Habilidad", y="Nivel")
+
             st.markdown("### 💀 Veredicto del Reclutador Tóxico:")
             st.write(response.text)
             
             # --- Funcionalidad Viral para LinkedIn ---
             st.divider()
-            st.subheader("📢 ¡Comparte tu humillación!")
+            st.subheader("🚀 Hazlo Viral (Si tienes valor)")
             
-            # Texto resumido para el post
-            # Puedes personalizar la URL final con la que te asigne Streamlit Cloud
-            app_url = "https://cv-roast-ai-2026.streamlit.app" 
+            # Lista de arquetipos para el post
+            arquetipos = ["Dinosaurio del ERP", "Mago de Tablas Planas", "Señor Cliché", "Eterno Junior", "Candidato Fantasma"]
+            tu_arquetipo = random.choice(arquetipos)
             
-            texto_post = f"""🔥 ¡Mi CV acaba de ser destruido por una IA de Reclutamiento! 💀
+            app_url = "https://tu-app-url.streamlit.app" # Cambia por tu URL real
+            
+            texto_post = f"""🔥 ¡Mi CV acaba de ser triturado por una IA de Reclutamiento! 💀
 
-📊 Mis resultados:
+📊 Resultados de mi humillación:
+- Arquetipo: {tu_arquetipo}
 - Empleabilidad: {score_emp}% (Casi nula)
-- Probabilidad de ser filtrado: 99.9%
-- Ganas de llorar: Altas
+- Índice de Fatiga: {score_fatiga}% 💤
 
-Veredicto: "Tu CV tiene más parches que un sistema legacy de los 90".
+Veredicto: "Tu CV es un 45% más genérico que el promedio de los Managers de TI".
 
-¿Crees que tu CV es mejor? Pruébalo aquí bajo tu propio riesgo:
+¿Te atreves a que Gemini 3 destruya tu trayectoria? Pruébalo aquí:
 {app_url}
 
-#CVRoast #Gemini3 #ITLife #DataScience #HumillacionTI"""
+#CVRoast #ITManagement #DataAnalytics #TechHumor #MichoacanTech"""
 
-            # Codificación para URL de LinkedIn
             texto_codificado = urllib.parse.quote(texto_post)
             linkedin_url = f"https://www.linkedin.com/sharing/share-offsite/?url={urllib.parse.quote(app_url)}&summary={texto_codificado}"
             
-            st.info("Copia este texto y usa el botón de abajo:")
+            st.info("Copia este texto y pégalo en LinkedIn:")
             st.code(texto_post, language="text")
             
-            # Botón directo a LinkedIn
-            st.link_button("📲 Publicar Resultado en LinkedIn", linkedin_url)
+            st.link_button("📲 Publicar en LinkedIn", linkedin_url)
             
         except Exception as e:
             st.error(f"Error técnico: {e}")
-            st.info("Asegúrate de haber configurado la GEMINI_API_KEY en los Secrets de Streamlit.")
 
-# Pie de página
 st.markdown("---")
-st.caption("Desarrollado para profesionales valientes. No apto para sensibles. 2026.")
+st.caption("Desarrollado para profesionales con piel gruesa. 2026.")
+
