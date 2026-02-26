@@ -30,7 +30,7 @@ st.set_page_config(page_title="CV Roast AI 2026", page_icon="💀", layout="cent
 # Barra lateral para monetización y apoyo
 st.sidebar.markdown('### ☕ ¿Te dolió el Roast?')
 st.sidebar.markdown(
-    """<a href="https://www.buymeacoffee.com/tu_usuario" target="_blank">
+    """<a href="https://www.buymeacoffee.com/gleon" target="_blank">
     <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 50px !important;width: 180px !important;" >
     </a>""", 
     unsafe_allow_html=True
@@ -108,5 +108,6 @@ if archivo_subido is not None:
 
 st.markdown("---")
 st.caption("Hecho para profesionales con piel gruesa, 2026.")
+
 
 
