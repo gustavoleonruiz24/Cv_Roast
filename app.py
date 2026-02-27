@@ -6,15 +6,16 @@ import urllib.parse
 
 # --- 1. CONFIGURACIÓN DE SEGURIDAD ---
 try:
+    # Asegúrate de que en Streamlit Secrets esté como GEMINI_API_KEY
     API_KEY = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=API_KEY)
 except Exception:
     st.error("⚠️ Error: Configura la API Key en los Secrets de Streamlit.")
     st.stop()
 
-# --- FIX 404: Selección de Modelo Estable ---
-# Usamos 'gemini-1.5-flash-latest' para asegurar compatibilidad con el nivel de pago
-model = genai.GenerativeModel('gemini-1.5-flash-latest')
+# --- SELECCIÓN DE MODELO ESTABLE (BASADO EN TUS CUOTAS) ---
+# Usamos el nombre base que aparece en tu consola de Google AI Studio
+model = genai.GenerativeModel('gemini-1.5-flash') 
 
 def extraer_texto_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
@@ -26,6 +27,7 @@ def extraer_texto_pdf(file):
 # --- 2. INTERFAZ ---
 st.set_page_config(page_title="CV Roast AI 2026", page_icon="💀", layout="centered")
 
+# Botón de Café (Monetización)
 st.markdown(
     """<div style="text-align: right;">
     <a href="https://www.buymeacoffee.com/gleon" target="_blank">
@@ -37,8 +39,9 @@ st.markdown(
 st.title("🔥 CV Roast: Edición 2026")
 st.subheader("Humillación profesional nivel Dios")
 
+# Contador dinámico
 if 'contador_visitas' not in st.session_state:
-    st.session_state.contador_visitas = random.randint(1450, 1600)
+    st.session_state.contador_visitas = random.randint(1580, 1650)
 else:
     st.session_state.contador_visitas += 1
 
@@ -48,20 +51,21 @@ st.markdown("---")
 archivo_subido = st.file_uploader("Sube tu CV (PDF)", type=["pdf"])
 
 if archivo_subido is not None:
-    with st.spinner('Escaneando mediocridad...'):
+    with st.spinner('Escaneando mediocridad laboral...'):
         try:
             texto_cv = extraer_texto_pdf(archivo_subido).lower()
             
             prompt = f"""
             Actúa como un reclutador de TI extremadamente sarcástico de Jacona, Michoacán. 
-            Analiza este CV y haz un roast brutal de máximo 3 párrafos. 
+            Analiza este CV y haz un roast brutal, corto y muy directo. 
             Identifica si tiene Power BI, Python o SQL.
             Texto: {texto_cv}
             """
             
+            # Generación de contenido
             response = model.generate_content(prompt)
             
-            # --- Visualización ---
+            # --- Visualización BI ---
             st.divider()
             score = random.randint(5, 38)
             col1, col2, col3 = st.columns(3)
@@ -72,9 +76,9 @@ if archivo_subido is not None:
             st.markdown("### 💀 Veredicto Brutal:")
             st.write(response.text)
 
-            # --- Cursos ---
+            # --- Cursos Sugeridos ---
             st.divider()
-            st.subheader("🛠️ Deja de dar pena, aprende algo:")
+            st.subheader("🛠️ Mejora tu perfil:")
             if "power bi" not in texto_cv:
                 st.warning("⚠️ Sin Power BI no eres nadie en BI.")
                 st.link_button("👉 Curso Power BI", "https://www.udemy.com/")
@@ -95,9 +99,10 @@ if archivo_subido is not None:
             st.link_button("Ir a LinkedIn", share_url)
             
         except Exception as e:
-            st.error("⚠️ Error de conexión: El modelo está terminando de propagarse.")
-            st.info("Reintenta en 15 segundos. Google está validando tu cuenta Pay-as-you-go.")
-            st.write(f"Log de error técnico: `{str(e)}`")
+            st.error("💣 Error de conexión con la IA.")
+            st.info("Google está validando los permisos de tu nueva cuenta Pay-as-you-go.")
+            st.write(f"Log técnico: `{str(e)}`")
 
 st.markdown("---")
-st.caption("Jacona, Michoacán, 2026. Basado en IA real.")
+st.caption("2026. Basado en IA real.")
+
