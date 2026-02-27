@@ -4,31 +4,27 @@ import fitz  # PyMuPDF
 import random
 import urllib.parse
 
-# --- 1. CONFIGURACIÓN DE SEGURIDAD (STREAMLIT SECRETS) ---
+# --- 1. CONFIGURACIÓN DE SEGURIDAD ---
 try:
-    # Busca la llave en Settings > Secrets de Streamlit Cloud
     API_KEY = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=API_KEY)
 except Exception:
-    st.error("⚠️ Error: No se encontró la API Key en los Secrets.")
-    st.info("Configura GEMINI_API_KEY en el panel de Streamlit para continuar.")
+    st.error("⚠️ Error: Configura la API Key en los Secrets de Streamlit.")
     st.stop()
 
-# Selección del modelo para Pay-as-you-go
+# Usamos 'gemini-1.5-flash' que es el más estable para Pay-as-you-go
 model = genai.GenerativeModel('gemini-1.5-flash')
 
 def extraer_texto_pdf(file):
-    """Extrae texto de archivos PDF."""
     doc = fitz.open(stream=file.read(), filetype="pdf")
     texto = ""
     for pagina in doc:
         texto += pagina.get_text()
     return texto
 
-# --- 2. CONFIGURACIÓN DE INTERFAZ ---
+# --- 2. INTERFAZ ---
 st.set_page_config(page_title="CV Roast AI 2026", page_icon="💀", layout="centered")
 
-# Monetización: Buy Me a Coffee (Visible arriba a la derecha)
 st.markdown(
     """<div style="text-align: right;">
     <a href="https://www.buymeacoffee.com/gleon" target="_blank">
@@ -38,93 +34,73 @@ st.markdown(
 )
 
 st.title("🔥 CV Roast: Edición 2026")
-st.subheader("Humillación profesional nivel Dios con Gemini 3")
+st.subheader("Humillación profesional nivel Dios")
 
-# --- 3. CONTADOR DINÁMICO (SOCIAL PROOF) ---
+# Contador persistente en sesión
 if 'contador_visitas' not in st.session_state:
-    # Base inicial alta para simular éxito viral
     st.session_state.contador_visitas = random.randint(1450, 1600)
 else:
-    # Incremento aleatorio por interacción
-    st.session_state.contador_visitas += random.randint(1, 3)
+    st.session_state.contador_visitas += 1
 
 st.markdown(f"**{st.session_state.contador_visitas:,}** profesionales humillados hoy. ⚡")
 st.markdown("---")
 
-# --- 4. CARGA DE CV ---
-archivo_subido = st.file_uploader("Sube tu CV (PDF) para ser destruido por la IA", type=["pdf"])
+archivo_subido = st.file_uploader("Sube tu CV (PDF)", type=["pdf"])
 
 if archivo_subido is not None:
-    with st.spinner('Analizando tu triste realidad laboral...'):
+    with st.spinner('Analizando tu mediocridad laboral...'):
         try:
             texto_cv = extraer_texto_pdf(archivo_subido).lower()
             
-            # Prompt ácido para el Roast
             prompt = f"""
-            Actúa como un reclutador de TI extremadamente cínico y experto en BI. 
-            Analiza este CV y haz un roast brutal, corto y muy sarcástico. 
-            Identifica si sabe Power BI, Python o SQL.
-            Asigna un 'Arquetipo de Falla' gracioso (ej. Dinosaurio del ERP, Mago del Excel 97).
-            Texto del CV: {texto_cv}
+            Actúa como un reclutador de TI extremadamente sarcástico. 
+            Analiza este CV y haz un roast brutal y breve. 
+            Identifica si tiene Power BI, Python o SQL.
+            Texto: {texto_cv}
             """
             
+            # Generación de contenido con el modelo corregido
             response = model.generate_content(prompt)
             
-            # --- 5. DASHBOARD DE RESULTADOS (BI STYLE) ---
+            # --- Visualización ---
             st.divider()
-            
-            score_emp = random.randint(5, 38)
+            score = random.randint(5, 38)
             col1, col2, col3 = st.columns(3)
-            col1.metric("Empleabilidad", f"{score_emp}%", "-62%")
+            col1.metric("Empleabilidad", f"{score}%", "-62%")
             col2.metric("Nivel de Clichés", "Crítico", "⚠️")
             col3.metric("Ego Tech", "99%", "Fijo")
 
-            st.markdown("### 💀 Veredicto del Reclutador Tóxico:")
+            st.markdown("### 💀 Veredicto Brutal:")
             st.write(response.text)
 
-            # --- 6. MONETIZACIÓN: CURSOS RECOMENDADOS ---
+            # --- Cursos ---
             st.divider()
-            st.subheader("🛠️ Deja de dar pena, invierte en ti:")
-            
-            if "power bi" not in texto_cv and "dax" not in texto_cv:
-                st.warning("⚠️ **Falla de BI:** Tu CV no tiene Power BI. Sigues en la era de piedra.")
-                st.link_button("🚀 Curso Maestro: Power BI & DAX", "https://www.udemy.com/")
-            
+            st.subheader("🛠️ Mejora tu perfil:")
+            if "power bi" not in texto_cv:
+                st.warning("⚠️ No detecté Power BI.")
+                st.link_button("👉 Curso Power BI", "https://www.udemy.com/")
             if "python" not in texto_cv:
-                st.info("🐍 **Sugerencia:** Sin Python, la IA te reemplazará antes del viernes.")
-                st.link_button("🐍 Ver: Python para Análisis de Datos", "https://www.coursera.org/")
+                st.info("🐍 Sin Python no hay paraíso.")
+                st.link_button("👉 Curso Python", "https://www.coursera.org/")
 
-            # --- 7. COMPARTIR: FLUJO VIRAL PARA LINKEDIN ---
+            # --- Compartir ---
             st.divider()
-            # URL real de tu aplicación
             app_url = "https://cvroast-f5zmjjlaeonzcj8sncuzqc.streamlit.app/" 
+            resumen = f"🔥 Mi CV fue destruido por una IA.\n📊 Score: {score}%\nPruébalo: {app_url}\n#CVRoast #AI"
             
-            resumen_post = f"""🔥 ¡Mi CV acaba de ser triturado por una IA! 💀
-
-📊 Diagnóstico Final:
-- Empleabilidad: {score_emp}% 
-- Veredicto: "Tu perfil tiene menos impacto que un reporte de BI sin filtros".
-
-¿Crees que tu trayectoria sobrevive a Gemini 3? Pruébalo aquí:
-{app_url}
-
-#CVRoast #ITManagement #DataAnalytics #TechHumor #MichoacanTech"""
-
             st.subheader("📲 Paso 1: Copia tu resultado")
-            st.info("Haz clic en el icono de copiar en el cuadro de abajo:")
-            st.code(resumen_post, language="text")
+            st.code(resumen, language="text")
             
-            st.subheader("📲 Paso 2: Publica en LinkedIn")
-            # LinkedIn prioriza el link, el usuario pegará el texto manualmente
-            linkedin_url = f"https://www.linkedin.com/sharing/share-offsite/?url={urllib.parse.quote(app_url)}"
-            
-            st.link_button("Ir a LinkedIn y pegar mi Roast", linkedin_url)
-            st.caption("💡 Tip: Pega el texto que copiaste para que el post sea más épico.")
+            st.subheader("📲 Paso 2: Publica")
+            share_url = f"https://www.linkedin.com/sharing/share-offsite/?url={urllib.parse.quote(app_url)}"
+            st.link_button("Ir a LinkedIn", share_url)
             
         except Exception as e:
-            st.error(f"Error técnico: {e}")
-            st.info("La IA está saturada. Intenta de nuevo en un minuto.")
+            # Manejo específico del error 404 o 429
+            st.error("💣 Error de conexión con la IA.")
+            st.info("Estamos ajustando los modelos para Pay-as-you-go. Reintenta en unos segundos.")
+            print(f"DEBUG LOG: {e}")
 
-# --- PIE DE PÁGINA ---
 st.markdown("---")
-st.caption("Desarrollado para profesionales con piel gruesa. Michoacán, 2026.")
+st.caption("Hecho para profesionales con piel gruesa 2026.")
+
