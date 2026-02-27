@@ -3,20 +3,22 @@ import google.generativeai as genai
 import fitz  # PyMuPDF
 import random
 import urllib.parse
-import time
 
-# --- 1. CONFIGURACIÓN DE SEGURIDAD ---
+# --- 1. CONFIGURACIÓN DE SEGURIDAD (STREAMLIT SECRETS) ---
 try:
+    # Busca la llave en Settings > Secrets de Streamlit Cloud
     API_KEY = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=API_KEY)
 except Exception:
-    st.error("⚠️ Error de Configuración: No se encontró la API Key en los Secrets de Streamlit.")
-    st.info("Asegúrate de añadir GEMINI_API_KEY en Settings > Secrets.")
+    st.error("⚠️ Error: No se encontró la API Key en los Secrets.")
+    st.info("Configura GEMINI_API_KEY en el panel de Streamlit para continuar.")
     st.stop()
 
-model = genai.GenerativeModel('gemini-3-flash-preview')
+# Selección del modelo para Pay-as-you-go
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 def extraer_texto_pdf(file):
+    """Extrae texto de archivos PDF."""
     doc = fitz.open(stream=file.read(), filetype="pdf")
     texto = ""
     for pagina in doc:
@@ -26,32 +28,30 @@ def extraer_texto_pdf(file):
 # --- 2. CONFIGURACIÓN DE INTERFAZ ---
 st.set_page_config(page_title="CV Roast AI 2026", page_icon="💀", layout="centered")
 
-# Estilo para el botón de café y contador
+# Monetización: Buy Me a Coffee (Visible arriba a la derecha)
 st.markdown(
-    """<div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-            <a href="https://www.buymeacoffee.com/gleon" target="_blank">
-                <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 145px !important;" >
-            </a>
-        </div>
-    </div>""", 
+    """<div style="text-align: right;">
+    <a href="https://www.buymeacoffee.com/gleon" target="_blank">
+    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 145px !important;" >
+    </a></div>""", 
     unsafe_allow_html=True
 )
 
 st.title("🔥 CV Roast: Edición 2026")
 st.subheader("Humillación profesional nivel Dios con Gemini 3")
 
-# --- 3. CONTADOR FICTICIO DINÁMICO ---
-# Usamos session_state para que el número crezca mientras el usuario navega
+# --- 3. CONTADOR DINÁMICO (SOCIAL PROOF) ---
 if 'contador_visitas' not in st.session_state:
+    # Base inicial alta para simular éxito viral
     st.session_state.contador_visitas = random.randint(1450, 1600)
 else:
+    # Incremento aleatorio por interacción
     st.session_state.contador_visitas += random.randint(1, 3)
 
-st.markdown(f"**{st.session_state.contador_visitas:,}** profesionales humillados el día de hoy. ⚡")
+st.markdown(f"**{st.session_state.contador_visitas:,}** profesionales humillados hoy. ⚡")
 st.markdown("---")
 
-# --- 4. CARGA DE ARCHIVOS ---
+# --- 4. CARGA DE CV ---
 archivo_subido = st.file_uploader("Sube tu CV (PDF) para ser destruido por la IA", type=["pdf"])
 
 if archivo_subido is not None:
@@ -59,17 +59,18 @@ if archivo_subido is not None:
         try:
             texto_cv = extraer_texto_pdf(archivo_subido).lower()
             
+            # Prompt ácido para el Roast
             prompt = f"""
-            Actúa como un reclutador de TI amargado y experto en BI. 
+            Actúa como un reclutador de TI extremadamente cínico y experto en BI. 
             Analiza este CV y haz un roast brutal, corto y muy sarcástico. 
-            Identifica si tiene Power BI, Python o SQL.
-            Asigna un 'Arquetipo de Falla' gracioso.
+            Identifica si sabe Power BI, Python o SQL.
+            Asigna un 'Arquetipo de Falla' gracioso (ej. Dinosaurio del ERP, Mago del Excel 97).
             Texto del CV: {texto_cv}
             """
             
             response = model.generate_content(prompt)
             
-            # --- 5. VISUALIZACIÓN DE RESULTADOS (BI STYLE) ---
+            # --- 5. DASHBOARD DE RESULTADOS (BI STYLE) ---
             st.divider()
             
             score_emp = random.randint(5, 38)
@@ -93,9 +94,9 @@ if archivo_subido is not None:
                 st.info("🐍 **Sugerencia:** Sin Python, la IA te reemplazará antes del viernes.")
                 st.link_button("🐍 Ver: Python para Análisis de Datos", "https://www.coursera.org/")
 
-            # --- 7. COMPARTIR: BOTÓN VIRAL PARA LINKEDIN ---
+            # --- 7. COMPARTIR: FLUJO VIRAL PARA LINKEDIN ---
             st.divider()
-            # REEMPLAZA ESTA URL CON LA TUYA REAL CUANDO ESTÉ LISTA
+            # URL real de tu aplicación
             app_url = "https://cvroast-f5zmjjlaeonzcj8sncuzqc.streamlit.app/" 
             
             resumen_post = f"""🔥 ¡Mi CV acaba de ser triturado por una IA! 💀
@@ -109,17 +110,21 @@ if archivo_subido is not None:
 
 #CVRoast #ITManagement #DataAnalytics #TechHumor #MichoacanTech"""
 
+            st.subheader("📲 Paso 1: Copia tu resultado")
+            st.info("Haz clic en el icono de copiar en el cuadro de abajo:")
             st.code(resumen_post, language="text")
-            texto_share = urllib.parse.quote(resumen_post)
-            linkedin_url = f"https://www.linkedin.com/sharing/share-offsite/?url={urllib.parse.quote(app_url)}&summary={texto_share}"
             
-            st.link_button("📲 Publicar en LinkedIn", linkedin_url)
+            st.subheader("📲 Paso 2: Publica en LinkedIn")
+            # LinkedIn prioriza el link, el usuario pegará el texto manualmente
+            linkedin_url = f"https://www.linkedin.com/sharing/share-offsite/?url={urllib.parse.quote(app_url)}"
+            
+            st.link_button("Ir a LinkedIn y pegar mi Roast", linkedin_url)
+            st.caption("💡 Tip: Pega el texto que copiaste para que el post sea más épico.")
             
         except Exception as e:
             st.error(f"Error técnico: {e}")
+            st.info("La IA está saturada. Intenta de nuevo en un minuto.")
 
+# --- PIE DE PÁGINA ---
 st.markdown("---")
-st.caption("Hecho para profesionales con piel gruesa. Michoacán, 2026.")
-
-
-
+st.caption("Desarrollado para profesionales con piel gruesa. Michoacán, 2026.")
