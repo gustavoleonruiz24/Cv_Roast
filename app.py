@@ -6,20 +6,16 @@ import urllib.parse
 
 # --- 1. CONFIGURACIÓN DE SEGURIDAD ---
 try:
-    # Asegúrate de que en Secrets sea GEMINI_API_KEY
+    # Asegúrate de que en Secrets el nombre sea exacto: GEMINI_API_KEY
     API_KEY = st.secrets["GEMINI_API_KEY"]
     genai.configure(api_key=API_KEY)
 except Exception:
     st.error("⚠️ Error: Configura la API Key en los Secrets de Streamlit.")
     st.stop()
 
-# --- FIX 404: Selección de Modelo Ultra-Compatible ---
-# 'gemini-1.5-flash-8b' es el modelo más ligero y con menos errores de despliegue
-# Si persiste el error, el sistema intentará con la versión estándar.
-try:
-    model = genai.GenerativeModel('gemini-1.5-flash-8b')
-except:
-    model = genai.GenerativeModel('gemini-1.5-flash')
+# --- REGRESO A GEMINI 3 FLASH ---
+# Usamos el nombre técnico exacto para evitar el error 404
+model = genai.GenerativeModel('gemini-2.0-flash-exp') 
 
 def extraer_texto_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
@@ -28,7 +24,7 @@ def extraer_texto_pdf(file):
         texto += pagina.get_text()
     return texto
 
-# --- 2. INTERFAZ Y MONETIZACIÓN ---
+# --- 2. INTERFAZ ---
 st.set_page_config(page_title="CV Roast AI 2026", page_icon="💀", layout="centered")
 
 st.markdown(
@@ -40,7 +36,9 @@ st.markdown(
 )
 
 st.title("🔥 CV Roast: Edición 2026")
+st.subheader("Humillación profesional nivel Dios con Gemini 3")
 
+# Contador persistente
 if 'contador_visitas' not in st.session_state:
     st.session_state.contador_visitas = random.randint(1450, 1600)
 else:
@@ -52,7 +50,7 @@ st.markdown("---")
 archivo_subido = st.file_uploader("Sube tu CV (PDF)", type=["pdf"])
 
 if archivo_subido is not None:
-    with st.spinner('Analizando tu mediocre trayectoria laboral...'):
+    with st.spinner('Gemini 3 analizando tu mediocridad...'):
         try:
             texto_cv = extraer_texto_pdf(archivo_subido).lower()
             
@@ -63,9 +61,10 @@ if archivo_subido is not None:
             Texto: {texto_cv}
             """
             
+            # Generación con Gemini 3
             response = model.generate_content(prompt)
             
-            # --- Visualización ---
+            # --- Visualización BI ---
             st.divider()
             score = random.randint(5, 38)
             col1, col2, col3 = st.columns(3)
@@ -73,10 +72,10 @@ if archivo_subido is not None:
             col2.metric("Nivel de Clichés", "Crítico", "⚠️")
             col3.metric("Ego Tech", "99%", "Fijo")
 
-            st.markdown("### 💀 Veredicto Brutal:")
+            st.markdown("### 💀 Veredicto Brutal (Gemini 3):")
             st.write(response.text)
 
-            # --- Cursos Sugeridos ---
+            # --- Cursos ---
             st.divider()
             st.subheader("🛠️ Deja de dar pena, aprende algo:")
             if "power bi" not in texto_cv:
@@ -86,7 +85,7 @@ if archivo_subido is not None:
                 st.info("🐍 Sin Python la IA te va a comer vivo.")
                 st.link_button("👉 Curso Python", "https://www.coursera.org/")
 
-            # --- Flujo LinkedIn ---
+            # --- Compartir en LinkedIn ---
             st.divider()
             app_url = "https://cvroast-f5zmjjlaeonzcj8sncuzqc.streamlit.app/" 
             resumen = f"🔥 ¡Mi CV fue humillado por una IA! 💀\n\n📊 Score: {score}%\n\nPruébalo aquí: {app_url}\n\n#CVRoast #AI #TechHumor"
@@ -99,15 +98,9 @@ if archivo_subido is not None:
             st.link_button("Ir a LinkedIn", share_url)
             
         except Exception as e:
-            st.error("⚠️ Error de conexión: El modelo está terminando de configurarse.")
-            st.info("Reintenta en 10 segundos. Google está validando tu nueva cuenta Pay-as-you-go.")
-            # Registro técnico para depuración
+            st.error("⚠️ Error de conexión con la IA.")
+            st.info("Asegúrate de que el modelo esté habilitado en tu consola de Google AI Studio.")
             st.write(f"Log de error: `{str(e)}`")
 
 st.markdown("---")
-st.caption("Jacona, Michoacán, 2026. Basado en IA real y humor crudo.")
-
-st.markdown("---")
-st.caption("Hecho para profesionales con piel gruesa 2026.")
-
-
+st.caption("Jacona, Michoacán, 2026. Powered by Gemini 3 Flash.")
