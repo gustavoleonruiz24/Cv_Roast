@@ -12,9 +12,9 @@ except Exception:
     st.error("⚠️ Error: Configura la API Key en los Secrets de Streamlit.")
     st.stop()
 
-# --- SELECCIÓN DE MODELO (Basado en tus cuotas de 'cv RATE') ---
-# Usamos el nombre que tu consola ya tiene mapeado y con Pay-as-you-go activo
-model = genai.GenerativeModel('gemini-1.5-flash') 
+# --- FIX 404: Selección de Modelo Estable ---
+# Usamos 'gemini-1.5-flash-latest' para asegurar compatibilidad con el nivel de pago
+model = genai.GenerativeModel('gemini-1.5-flash-latest')
 
 def extraer_texto_pdf(file):
     doc = fitz.open(stream=file.read(), filetype="pdf")
@@ -26,7 +26,6 @@ def extraer_texto_pdf(file):
 # --- 2. INTERFAZ ---
 st.set_page_config(page_title="CV Roast AI 2026", page_icon="💀", layout="centered")
 
-# Botón de Café (Monetización)
 st.markdown(
     """<div style="text-align: right;">
     <a href="https://www.buymeacoffee.com/gleon" target="_blank">
@@ -38,7 +37,6 @@ st.markdown(
 st.title("🔥 CV Roast: Edición 2026")
 st.subheader("Humillación profesional nivel Dios")
 
-# Contador de humillados
 if 'contador_visitas' not in st.session_state:
     st.session_state.contador_visitas = random.randint(1450, 1600)
 else:
@@ -61,10 +59,9 @@ if archivo_subido is not None:
             Texto: {texto_cv}
             """
             
-            # Ejecución de la IA
             response = model.generate_content(prompt)
             
-            # --- Resultados Visuales ---
+            # --- Visualización ---
             st.divider()
             score = random.randint(5, 38)
             col1, col2, col3 = st.columns(3)
@@ -75,7 +72,7 @@ if archivo_subido is not None:
             st.markdown("### 💀 Veredicto Brutal:")
             st.write(response.text)
 
-            # --- Monetización (Cursos) ---
+            # --- Cursos ---
             st.divider()
             st.subheader("🛠️ Deja de dar pena, aprende algo:")
             if "power bi" not in texto_cv:
@@ -85,7 +82,7 @@ if archivo_subido is not None:
                 st.info("🐍 Sin Python la IA te va a comer vivo.")
                 st.link_button("👉 Curso Python", "https://www.coursera.org/")
 
-            # --- Flujo LinkedIn (Corregido) ---
+            # --- LinkedIn ---
             st.divider()
             app_url = "https://cvroast-f5zmjjlaeonzcj8sncuzqc.streamlit.app/" 
             resumen = f"🔥 ¡Mi CV fue humillado por una IA! 💀\n\n📊 Score: {score}%\n\nPruébalo aquí: {app_url}\n\n#CVRoast #AI #TechHumor"
@@ -98,10 +95,9 @@ if archivo_subido is not None:
             st.link_button("Ir a LinkedIn", share_url)
             
         except Exception as e:
-            st.error("⚠️ Error de conexión con la IA.")
-            st.info("Estamos ajustando los modelos para tu nueva cuenta Pay-as-you-go.")
+            st.error("⚠️ Error de conexión: El modelo está terminando de propagarse.")
+            st.info("Reintenta en 15 segundos. Google está validando tu cuenta Pay-as-you-go.")
             st.write(f"Log de error técnico: `{str(e)}`")
 
 st.markdown("---")
 st.caption("Jacona, Michoacán, 2026. Basado en IA real.")
-
